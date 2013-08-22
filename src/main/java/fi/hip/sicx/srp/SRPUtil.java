@@ -1,6 +1,8 @@
 package fi.hip.sicx.srp;
 
 import java.math.BigInteger;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.util.BigIntegers;
@@ -30,7 +32,8 @@ public class SRPUtil {
         
     }
 
-    public static byte[] calculateM2(BigInteger A, byte M1[], byte K[], int length, Digest digest){
+    public static byte[] calculateM2(BigInteger A, byte M1[], byte K[], int length, Digest digest){       
+        
         byte ABytes[] = getPadded(A, length);
         
         digest.update(ABytes, 0, ABytes.length);
@@ -77,6 +80,11 @@ public class SRPUtil {
     public static byte[] hashBigInteger(BigInteger S, int length, Digest digest){
         byte SBits[] = getPadded(S, length);
         return hash(SBits, length, digest);        
+    }
+    
+    public static byte[] StringBytes(String input){
+        String normalized = Normalizer.normalize(input, Form.NFKC);
+        return normalized.getBytes();
     }
 
 }

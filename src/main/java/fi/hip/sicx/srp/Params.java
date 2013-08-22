@@ -35,7 +35,7 @@ public class Params {
     /**
      * The safe prime used as modulus.
      */
-    public static final BigInteger N = new BigInteger(NString);
+    public static final BigInteger N = new BigInteger(NString, 16);
     /**
      * The generator for the calculations.
      */

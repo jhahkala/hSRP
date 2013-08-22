@@ -13,7 +13,7 @@ public class SRPClient {
     private static SecureRandom pseudoReandomGen = new SecureRandom();
     
     
-    public static BigInteger login(SRPAPI service, byte identity[], byte password[]) throws CryptoException{
+    public static BigInteger login(SRPAPI service, byte identity[], byte password[]) throws CryptoException, HandshakeException{
         Digest digest = new SHA512Digest();
         
         // just to clarify the variables.
@@ -29,13 +29,19 @@ public class SRPClient {
         HostStartReply reply = service.startHandshake(identity, A);
         
         byte salt[] = reply.getSalt();
+       
         BigInteger B = SRP6Util.validatePublicValue(N, reply.getB());
         
         BigInteger u = SRP6Util.calculateU(digest, N, A, B);
+        // check u
+        BigInteger checku = u.mod(N);
+        if(checku.equals(BigInteger.valueOf(0))){
+            throw new HandshakeException("Invalid random scrambling value u. Probable attack.");
+        }
         BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
         BigInteger k = SRP6Util.calculateK(digest, N, g);
         
-        BigInteger exp = u.multiply(x).add(a);
+        BigInteger exp = u.multiply(x).mod(N).add(a).mod(N);
         BigInteger tmp = g.modPow(x, N).multiply(k).mod(N);
         BigInteger S = B.subtract(tmp).mod(N).modPow(exp, N);
         
@@ -43,7 +49,7 @@ public class SRPClient {
         
         byte M1[] = SRPUtil.calculateM1(N, g, identity, salt, A, B, K, padLength, digest);
         
-        byte M2[] = service.finishHandShake(M1);
+        byte M2[] = service.finishHandShake(identity, A, M1);
         
         if(verifyM2(M2, A, M1, K, padLength, digest)){
             return S;
