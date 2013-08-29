@@ -1,9 +1,11 @@
 package fi.hip.sicx.srp;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class HostStartReply {
+public class HostStartReply implements Serializable{
     
+    private static final long serialVersionUID = -4181277820829472860L;
     private byte m_salt[] = null;
     private BigInteger m_B = null;
     

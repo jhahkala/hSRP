@@ -10,7 +10,7 @@ import org.bouncycastle.crypto.agreement.srp.SRP6Util;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.junit.Test;
 
-public class SRPTest {
+public class SRPAPITest {
     private static SecureRandom pseudoRandomGen = new SecureRandom();
 
     @Test

@@ -16,7 +16,9 @@ import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
 
-public class SRPService implements SRPAPI {
+import com.caucho.hessian.server.HessianServlet;
+
+public class SRPService extends HessianServlet implements SRPAPI {
     
     private static final String USERSLOGIN_CONFIG_FILE_OPT = "cacheConfigFile";
     private static Cache<String, User> users = null;
@@ -46,6 +48,9 @@ public class SRPService implements SRPAPI {
         }
         cacheManager = new DefaultCacheManager(cacheConfig);
         users = cacheManager.getCache("passwordsAndSessions");
+        System.out.println("users: " + users);
+        System.out.println("props: " + props);
+        props.list(System.out);
     }
 
 
