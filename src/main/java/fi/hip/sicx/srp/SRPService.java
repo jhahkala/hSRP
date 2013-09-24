@@ -20,7 +20,7 @@ import com.caucho.hessian.server.HessianServlet;
 
 public class SRPService extends HessianServlet implements SRPAPI {
     
-    private static final String USERSLOGIN_CONFIG_FILE_OPT = "cacheConfigFile";
+    private static final String USERSLOGIN_CONFIG_FILE_OPT = "loginCacheConfigFile";
     private static Cache<String, User> users = null;
     private static DefaultCacheManager cacheManager = null;
     private static SecureRandom pseudoReandomGen = new SecureRandom();
