@@ -41,5 +41,14 @@ public interface SRPAPI {
      * @param v
      */
     public void putVerifier(byte salt[], byte identity[], BigInteger v);
+    
+    
+    /**
+     * Used to log out of the system. It removes the session based on the A.
+     * 
+     * @param identity The identity to log out.
+     * @param K The session id, a hash of the session key.
+     */
+    public void logout(byte[] identity, byte[] K);
 
 }

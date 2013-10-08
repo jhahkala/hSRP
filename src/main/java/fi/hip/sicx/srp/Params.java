@@ -40,4 +40,10 @@ public class Params {
      * The generator for the calculations.
      */
     public static final BigInteger g = BigInteger.valueOf(5);
+    
+    public static final int bytes = (N.bitLength() + 7)/8;
+    
+    public static final BigInteger zero = new BigInteger("0");
+    
+    public static final byte zeroBytes[] = SRPUtil.getPadded(zero, bytes);
 }

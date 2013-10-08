@@ -12,8 +12,34 @@ public class SRPClient {
     
     private static SecureRandom pseudoReandomGen = new SecureRandom();
     
+    public static void putVerifier(SRPAPI service, String name, String passwordString){
+        BigInteger N = Params.N;
+        BigInteger g = Params.g;
+
+        Digest digest = new SHA512Digest();
+        SecureRandom pseudoRandomGen = new SecureRandom();
+
+        BigInteger random = SRP6Util.generatePrivateValue(digest, N, Params.g, pseudoRandomGen);
+
+        int padLength = (N.bitLength() + 7) / 8;
+
+        byte salt[] = SRPUtil.getPadded(random, padLength);
+        byte identity[] = SRPUtil.stringBytes(name);
+        byte password[] = SRPUtil.stringBytes(passwordString);
+
+        BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
+
+        BigInteger verifier = g.modPow(x, N);
+
+        System.out.println("salt: " + salt + " identity: " + identity + " verifier: " + verifier);
+
+        service.putVerifier(salt, identity, verifier);
+
+        
+    }
     
-    public static BigInteger login(SRPAPI service, byte identity[], byte password[]) throws CryptoException, HandshakeException{
+    
+    public static SessionKey login(SRPAPI service, byte identity[], byte password[]) throws CryptoException, HandshakeException{
         Digest digest = new SHA512Digest();
         
         // just to clarify the variables.
@@ -52,9 +78,9 @@ public class SRPClient {
         byte M2[] = service.finishHandShake(identity, A, M1);
         
         if(verifyM2(M2, A, M1, K, padLength, digest)){
-            return S;
+            return new SessionKey(S,K);
         } else {
-            throw new CryptoException("Server sent a wrong reply, authentication failed! (Check that there is no compromise on server side)");
+            throw new HandshakeException("Server sent a wrong reply, authentication failed! (Possible compromise on server side)");
         }
         
     }

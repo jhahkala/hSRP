@@ -31,8 +31,8 @@ public class SRPAPITest {
         
         
         byte salt[] = SRPUtil.getPadded(random, padLength);
-        byte identity[] = SRPUtil.StringBytes(name);
-        byte password[] = SRPUtil.StringBytes(passwordString);
+        byte identity[] = SRPUtil.stringBytes(name);
+        byte password[] = SRPUtil.stringBytes(passwordString);
         
         BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
         

@@ -49,7 +49,7 @@ public class SRPServer {
         props.load(new FileReader(configFile));
         
         SslContextFactory factory = new SslContextFactory();
-        factory.setSslContext((new ContextWrapper(props, true)).getContext());
+        factory.setSslContext((new ContextWrapper(props, false)).getContext());
         factory.setWantClientAuth(false);
         factory.setNeedClientAuth(false);
         SslSelectChannelConnector connector = new SslSelectChannelConnector(factory);

@@ -2,27 +2,23 @@ package fi.hip.sicx.srp;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocket;
 
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.agreement.srp.SRP6Util;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.glite.security.trustmanager.ContextWrapper;
-import org.joni.test.meta.client.TMHostnameVerifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.caucho.hessian.client.TMHessianURLConnectionFactory;
+
 
 public class SRPServiceTest {
 
@@ -113,8 +109,8 @@ public class SRPServiceTest {
             
             
             byte salt[] = SRPUtil.getPadded(random, padLength);
-            byte identity[] = SRPUtil.StringBytes(name);
-            byte password[] = SRPUtil.StringBytes(passwordString);
+            byte identity[] = SRPUtil.stringBytes(name);
+            byte password[] = SRPUtil.stringBytes(passwordString);
             
             BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
             

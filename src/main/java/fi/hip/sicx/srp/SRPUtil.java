@@ -82,7 +82,7 @@ public class SRPUtil {
         return hash(SBits, length, digest);        
     }
     
-    public static byte[] StringBytes(String input){
+    public static byte[] stringBytes(String input){
         String normalized = Normalizer.normalize(input, Form.NFKC);
         return normalized.getBytes();
     }

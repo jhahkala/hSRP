@@ -2,8 +2,13 @@ package fi.hip.sicx.srp;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+
+import org.bouncycastle.util.encoders.Hex;
+
 
 public class User implements Serializable {
 
@@ -52,11 +57,52 @@ public class User implements Serializable {
     }
     
     public void addSession(Session session){
+        if(m_sessions == null){
+            m_sessions = new LinkedList<Session>();
+        }
         m_sessions.add(session);
+    }
+    
+    public int removeSession(byte[] K){
+        int found = 0;
+        if(K == null){
+            throw new IllegalArgumentException("No session ID given, can't remove a session without ID.");
+        }
+        for(Session session: m_sessions){
+            if(Arrays.equals(K, session._sessionId)){
+                m_sessions.remove(session);
+                found++;
+                // intentionally continue to search for more occucences of the same session.
+            }
+        }
+        return found;
+    }
+    
+    public Session findSession(byte K[]){
+        if(K == null){
+            throw new IllegalArgumentException("No session ID given, can't find a session.");
+        }
+        for(Session session: m_sessions){
+            System.out.println("Checking:");
+            System.out.println("1: " + new String(Hex.encode(K)) + " len: " + K.length);
+            System.out.println("2: " + new String(Hex.encode(session._sessionId)) + " len: " + session._sessionId.length);
+            
+            if(Arrays.equals(K, session._sessionId)){
+                System.out.println("match");
+                return session;
+            }else{
+                System.out.println("no match");
+            }
+        }
+        return null;
     }
     
     public void addHandshake(OpenHandshake handshake){
         openLogins.put(handshake.getA(), handshake);
+    }
+    
+    public void removeHandshake(BigInteger A){
+        openLogins.remove(A);
     }
     
     public OpenHandshake getHandshakes(BigInteger A){

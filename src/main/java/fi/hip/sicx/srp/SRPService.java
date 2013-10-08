@@ -20,9 +20,10 @@ import com.caucho.hessian.server.HessianServlet;
 
 public class SRPService extends HessianServlet implements SRPAPI {
     
-    private static final String USERSLOGIN_CONFIG_FILE_OPT = "loginCacheConfigFile";
-    private static Cache<String, User> users = null;
-    private static DefaultCacheManager cacheManager = null;
+    private static final long serialVersionUID = 2588238351912872652L;
+    public static final String USERSLOGIN_CONFIG_FILE_OPT = "loginCacheConfigFile";
+    private static Cache<String, User> _users = null;
+    private static DefaultCacheManager _cacheManager = null;
     private static SecureRandom pseudoReandomGen = new SecureRandom();
     
     public SRPService(String configFile) throws IOException {
@@ -46,20 +47,25 @@ public class SRPService extends HessianServlet implements SRPAPI {
         if (testFile.isDirectory()) {
             throw new FileNotFoundException("The file \"" + cacheConfig + "\" given as a storage configuration file is a directory!");
         }
-        cacheManager = new DefaultCacheManager(cacheConfig);
-        users = cacheManager.getCache("passwordsAndSessions");
-        System.out.println("users: " + users);
+        if(_cacheManager == null){
+            _cacheManager = new DefaultCacheManager(cacheConfig);
+        }
+        _users = _cacheManager.getCache("passwordsAndSessions");
+        System.out.println("users: " + _users);
         System.out.println("props: " + props);
         props.list(System.out);
     }
 
+    public Cache<String, User> getSessionCache(){
+        return _users;
+    }
 
 
     public HostStartReply startHandshake(byte[] identity, BigInteger A) throws HandshakeException, CryptoException {
         Digest digest = new SHA512Digest();
         
         String name = new String(identity);
-        User user = users.get(name);
+        User user = _users.get(name);
         // Check also the identity bytes to make sure the string conversion didn't cause clash
         if (!Arrays.equals(user.getIdentity(), identity)){
             throw new HandshakeException("Invalid name.");
@@ -74,9 +80,9 @@ public class SRPService extends HessianServlet implements SRPAPI {
         OpenHandshake handshake = new OpenHandshake(A, B, b);
         
         // get the user again to refresh it in case there are other logins happening.
-        user = users.get(name);
+        user = _users.get(name);
         user.addHandshake(handshake);
-        users.put(name, user);
+        _users.put(name, user);
         
         return new HostStartReply(user.getSalt(), B);
         
@@ -87,7 +93,7 @@ public class SRPService extends HessianServlet implements SRPAPI {
         int padLength = (Params.N.bitLength() + 7) / 8;
 
         String name = new String(identity);
-        User user = users.get(name);
+        User user = _users.get(name);
         
         // Check also the identity bytes to make sure the string conversion didn't cause clash
         if (user == null || !Arrays.equals(user.getIdentity(), identity)){
@@ -106,6 +112,12 @@ public class SRPService extends HessianServlet implements SRPAPI {
        
         byte K[] = SRPUtil.hashBigInteger(S, padLength, digest);
         
+        user.removeHandshake(A);
+        Session testSession = new Session(K, S);
+        user.addSession(testSession);
+        
+        _users.put(name, user);
+        System.out.println("handshake Identity: " + new String(identity) + " session K: " + new String(K));
         return SRPUtil.calculateM2(A, M1, K, padLength, digest);
     }
 
@@ -113,12 +125,31 @@ public class SRPService extends HessianServlet implements SRPAPI {
         String name = new String(identity);
         User user = new User(name, identity, salt, v);
         // TODO: check that no user with that name or identity exists before
-        users.put(name, user);
+        _users.put(name, user);
         
     }
     
     public static BigInteger calculateS(BigInteger v, BigInteger A, BigInteger b, BigInteger u, BigInteger N){
         return v.modPow(u, N).multiply(A).mod(N).modPow(b, N);
+    }
+
+
+
+    public void logout(byte[] identity, byte[] K) {
+        if (identity == null){
+            throw new IllegalArgumentException("Cannot logout without giving an identity.");
+        }
+        if(K == null){
+            throw new IllegalArgumentException("Cannot logout without giving a session.");
+        }
+        String name = new String(identity);
+        User user = _users.get(new String(identity));
+        if(user == null){
+            // TODO: do fake stuff to make finding our if that user exists harder by timing analysis
+            return;
+        }
+        user.removeSession(K);
+        _users.put(name, user);
     }
 
     

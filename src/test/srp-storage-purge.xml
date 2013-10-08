@@ -10,7 +10,7 @@
           fetchPersistentState="true" ignoreModifications="false"
           purgeOnStartup="true">
         <properties>
-          <property name="location" value="users-storage.dat" />
+          <property name="location" value="srp-storage.dat" />
         </properties>
       </loader>
     </loaders>
