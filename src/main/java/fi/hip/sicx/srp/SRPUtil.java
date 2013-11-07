@@ -14,7 +14,7 @@ public class SRPUtil {
         byte hashN[] = hashBigInteger(N, length, digest);
         byte hashg[] = hashBigInteger(g, length, digest);
         byte xorHashes[] = calculateXor(hashN, hashg);
-        byte hashIdentity[] = hash(identity, length, digest);
+        byte hashIdentity[] = hash(identity, digest);
         byte ABytes[] = getPadded(A, length);
         byte BBytes[] = getPadded(B, length);
         
@@ -70,16 +70,17 @@ public class SRPUtil {
         return bs;
     }
 
-    public static byte[] hash(byte input[], int length, Digest digest){
+    public static byte[] hash(byte input[], Digest digest){
         digest.update(input, 0, input.length);
-        byte value[] = new byte[length];
+        int outSize = digest.getDigestSize();
+        byte value[] = new byte[outSize];
         digest.doFinal(value, 0);
         return value;
     }
 
     public static byte[] hashBigInteger(BigInteger S, int length, Digest digest){
         byte SBits[] = getPadded(S, length);
-        return hash(SBits, length, digest);        
+        return hash(SBits, digest);        
     }
     
     public static byte[] stringBytes(String input){

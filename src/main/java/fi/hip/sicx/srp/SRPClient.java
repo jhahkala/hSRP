@@ -7,6 +7,7 @@ import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.agreement.srp.SRP6Util;
 import org.bouncycastle.crypto.digests.SHA512Digest;
+import org.bouncycastle.util.encoders.Hex;
 
 public class SRPClient {
     
@@ -46,7 +47,7 @@ public class SRPClient {
         BigInteger g = Params.g;
         BigInteger N = Params.N;
         
-        int padLength = (N.bitLength() + 7) / 8;
+        int bytesLength = (N.bitLength() + 7) / 8;
         
         // Generate the public value A
         BigInteger a = SRP6Util.generatePrivateValue(digest, N, g, pseudoReandomGen);
@@ -71,13 +72,13 @@ public class SRPClient {
         BigInteger tmp = g.modPow(x, N).multiply(k).mod(N);
         BigInteger S = B.subtract(tmp).mod(N).modPow(exp, N);
         
-        byte K[] = SRPUtil.hashBigInteger(S, padLength, digest);
+        byte K[] = SRPUtil.hashBigInteger(S, bytesLength, digest);
         
-        byte M1[] = SRPUtil.calculateM1(N, g, identity, salt, A, B, K, padLength, digest);
+        byte M1[] = SRPUtil.calculateM1(N, g, identity, salt, A, B, K, bytesLength, digest);
         
         byte M2[] = service.finishHandShake(identity, A, M1);
         
-        if(verifyM2(M2, A, M1, K, padLength, digest)){
+        if(verifyM2(M2, A, M1, K, bytesLength, digest)){
             return new SessionKey(S,K);
         } else {
             throw new HandshakeException("Server sent a wrong reply, authentication failed! (Possible compromise on server side)");
