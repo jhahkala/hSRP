@@ -1,6 +1,8 @@
 package fi.hip.sicx.srp;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 
 import org.bouncycastle.crypto.CryptoException;
@@ -28,7 +30,14 @@ public class SRPClient {
         byte identity[] = SRPUtil.stringBytes(name);
         byte password[] = SRPUtil.stringBytes(passwordString);
 
-        BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
+        BigInteger x;
+		try {
+			x = SRPUtil.calculateXWithScrypt(N, salt, identity, password);
+		} catch (IOException | GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException("Internal error while calculating verifier.");
+		}
 
         BigInteger verifier = g.modPow(x, N);
 
@@ -65,7 +74,14 @@ public class SRPClient {
         if(checku.equals(BigInteger.valueOf(0))){
             throw new HandshakeException("Invalid random scrambling value u. Probable attack.");
         }
-        BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
+        BigInteger x;
+		try {
+			x = SRPUtil.calculateXWithScrypt(N, salt, identity, password);
+		} catch (IOException | GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new HandshakeException("Internal error while calculating verifier.");
+		}
         BigInteger k = SRP6Util.calculateK(digest, N, g);
         
         BigInteger exp = u.multiply(x).mod(N).add(a).mod(N);

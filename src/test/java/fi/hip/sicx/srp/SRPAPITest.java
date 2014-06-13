@@ -2,6 +2,7 @@ package fi.hip.sicx.srp;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 
 import org.bouncycastle.crypto.CryptoException;
@@ -14,7 +15,7 @@ public class SRPAPITest {
     private static SecureRandom pseudoRandomGen = new SecureRandom();
 
     @Test
-    public void testSRP() throws CryptoException, HandshakeException, IOException{
+    public void testSRP() throws CryptoException, HandshakeException, IOException, GeneralSecurityException{
         SRPService service = new SRPService("src/test/srp-purge.conf");
         
         BigInteger N = Params.N;
@@ -34,7 +35,7 @@ public class SRPAPITest {
         byte identity[] = SRPUtil.stringBytes(name);
         byte password[] = SRPUtil.stringBytes(passwordString);
         
-        BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
+        BigInteger x = SRPUtil.calculateXWithScrypt(N, salt, identity, password);
         
         BigInteger verifier = g.modPow(x, N);
         
@@ -42,7 +43,9 @@ public class SRPAPITest {
         
         service.putVerifier(salt, identity, verifier);
 
-        SRPClient.login(service, identity, password);
+        SessionKey session = SRPClient.login(service, identity, password);
+        
+        System.out.println("K: " + new String(session.getK()) + " S: " + session.getS());
     }
     
     /**
