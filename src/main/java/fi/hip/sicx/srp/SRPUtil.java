@@ -1,11 +1,16 @@
 package fi.hip.sicx.srp;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.util.BigIntegers;
+
+import com.lambdaworks.crypto.SCrypt;
 
 public class SRPUtil {
 
@@ -87,5 +92,32 @@ public class SRPUtil {
         String normalized = Normalizer.normalize(input, Form.NFKC);
         return normalized.getBytes();
     }
+    
+    /**
+     * Calculates the X using scrypt instead of sha512, making thins much more safe.
+     * 
+     * @param N The N for defining the modulo arithmetic.
+     * @param salt The salt for salting the password.
+     * @param identity The username.
+     * @param password The password.
+     * @return The X calculated with Scrypt and from the given info.
+     * @throws IOException thrown when writing to memory fails, meaning out of memory.
+     * @throws GeneralSecurityException during scrypting...
+     */
+    public static BigInteger calculateXWithScrypt(BigInteger N, byte[] salt, byte[] identity, byte[] password) throws IOException, GeneralSecurityException
+    {
+    	// concatenate the identity and password
+    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    	stream.write(identity);
+    	stream.write(new byte[]{':'});
+    	stream.write(password);
+    	
+    	byte idPass[] = stream.toByteArray();
+    	
+    	byte output[] = SCrypt.scrypt(idPass, salt, 2^10, 8, 1, 64);
+    	
+        return new BigInteger(1, output).mod(N);
+    }
+
 
 }
