@@ -9,7 +9,6 @@ import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.agreement.srp.SRP6Util;
 import org.bouncycastle.crypto.digests.SHA512Digest;
-import org.bouncycastle.util.encoders.Hex;
 
 public class SRPClient {
     
