@@ -40,7 +40,7 @@ public class SRPClient {
 
         BigInteger verifier = g.modPow(x, N);
 
-        System.out.println("salt: " + salt + " identity: " + identity + " verifier: " + verifier);
+        System.out.println("xxsalt: " + new String(salt) + " identity: " + new String(identity) + " verifier: " + verifier);
 
         service.putVerifier(salt, identity, verifier);
 
@@ -96,7 +96,7 @@ public class SRPClient {
         if(verifyM2(M2, A, M1, K, bytesLength, digest)){
             return new SessionKey(S,K);
         } else {
-            throw new HandshakeException("Server sent a wrong reply, authentication failed! (Possible compromise on server side)");
+            throw new HandshakeException("Server xx sent a wrong reply, authentication failed! (Possible compromise on server side)");
         }
         
     }

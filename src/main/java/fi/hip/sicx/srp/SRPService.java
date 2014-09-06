@@ -117,7 +117,7 @@ public class SRPService extends HessianServlet implements SRPAPI {
         user.addSession(testSession);
         
         _users.put(name, user);
-        System.out.println("handshake Identity: " + new String(identity) + " session K: " + new String(K));
+        System.out.println("handshakeaa Identity: " + new String(identity) + " session K: " + new String(K));
         return SRPUtil.calculateM2(A, M1, K, padLength, digest);
     }
 

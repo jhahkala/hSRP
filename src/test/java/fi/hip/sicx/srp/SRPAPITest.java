@@ -39,7 +39,7 @@ public class SRPAPITest {
         
         BigInteger verifier = g.modPow(x, N);
         
-        System.out.println("salt: " + salt+ " identity: " +identity+ " verifier: "+ verifier);
+        System.out.println("saltb: " + new String(salt)+ " identity: " +new String(identity)+ " verifier: "+ verifier);
         
         service.putVerifier(salt, identity, verifier);
 

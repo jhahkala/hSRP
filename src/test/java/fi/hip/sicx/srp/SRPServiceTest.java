@@ -2,15 +2,10 @@ package fi.hip.sicx.srp;
 
 import java.io.File;
 import java.io.FileReader;
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.agreement.srp.SRP6Util;
-import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.glite.security.trustmanager.ContextWrapper;
 import org.junit.After;
 import org.junit.Before;
@@ -21,8 +16,6 @@ import com.caucho.hessian.client.TMHessianURLConnectionFactory;
 
 
 public class SRPServiceTest {
-
-    private static SecureRandom pseudoRandomGen = new SecureRandom();
 
     public static final String TEST_USER = "CN=trusted client,OU=Relaxation,O=Utopia,L=Tropic,C=UG";
     public static final String TEST_USER2 = "CN=trusted clientserver,OU=Relaxation,O=Utopia,L=Tropic,C=UG";
@@ -95,30 +88,12 @@ public class SRPServiceTest {
             factory.setConnectionFactory(connectionFactory);
             SRPAPI service = (SRPAPI) factory.create(SRPAPI.class, url);
             
-            BigInteger N = Params.N;
-            BigInteger g = Params.g;
-
             String name = "UserNamexxx";
             String passwordString = "PassWordaaa";
+            SRPClient.putVerifier(service, name, passwordString);
             
-            Digest digest = new SHA512Digest();
-            
-            BigInteger random = SRP6Util.generatePrivateValue(digest, N, Params.g, pseudoRandomGen);
-            
-            int padLength = (N.bitLength() + 7) / 8;
-            
-            
-            byte salt[] = SRPUtil.getPadded(random, padLength);
             byte identity[] = SRPUtil.stringBytes(name);
             byte password[] = SRPUtil.stringBytes(passwordString);
-            
-            BigInteger x = SRP6Util.calculateX(digest, N, salt, identity, password);
-            
-            BigInteger verifier = g.modPow(x, N);
-            
-            System.out.println("salt: " + salt+ " identity: " +identity+ " verifier: "+ verifier);
-            
-            service.putVerifier(salt, identity, verifier);
 
             SRPClient.login(service, identity, password);
              
