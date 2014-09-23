@@ -115,7 +115,7 @@ public class SRPUtil {
     	byte idPass[] = stream.toByteArray();
     	System.out.println(1<<17);
     	
-    	byte output[] = SCrypt.scrypt(idPass, salt, 1<<17, 16, 2, 64);
+    	byte output[] = SCrypt.scrypt(idPass, salt, 1<<15, 13, 2, 64);
     	
         return new BigInteger(1, output).mod(N);
     }
