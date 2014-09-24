@@ -83,15 +83,15 @@ public class User implements Serializable {
             throw new IllegalArgumentException("No session ID given, can't find a session.");
         }
         for(Session session: m_sessions){
-            System.out.println("Checking:");
-            System.out.println("1: " + new String(Hex.encode(K)) + " len: " + K.length);
-            System.out.println("2: " + new String(Hex.encode(session._sessionId)) + " len: " + session._sessionId.length);
+//            System.out.println("Checking:");
+//            System.out.println("1: " + new String(Hex.encode(K)) + " len: " + K.length);
+//            System.out.println("2: " + new String(Hex.encode(session._sessionId)) + " len: " + session._sessionId.length);
             
             if(Arrays.equals(K, session._sessionId)){
-                System.out.println("match");
+//                System.out.println("match");
                 return session;
             }else{
-                System.out.println("no match");
+//                System.out.println("no match");
             }
         }
         return null;

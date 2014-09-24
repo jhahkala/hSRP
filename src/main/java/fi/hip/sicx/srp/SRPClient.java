@@ -33,14 +33,13 @@ public class SRPClient {
 		try {
 			x = SRPUtil.calculateXWithScrypt(N, salt, identity, password);
 		} catch (IOException | GeneralSecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("Internal error while calculating verifier.");
 		}
 
         BigInteger verifier = g.modPow(x, N);
 
-        System.out.println("xxsalt: " + new String(salt) + " identity: " + new String(identity) + " verifier: " + verifier);
+//        System.out.println("xxsalt: " + new String(salt) + " identity: " + new String(identity) + " verifier: " + verifier);
 
         service.putVerifier(salt, identity, verifier);
 
@@ -77,7 +76,6 @@ public class SRPClient {
 		try {
 			x = SRPUtil.calculateXWithScrypt(N, salt, identity, password);
 		} catch (IOException | GeneralSecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new HandshakeException("Internal error while calculating verifier.");
 		}

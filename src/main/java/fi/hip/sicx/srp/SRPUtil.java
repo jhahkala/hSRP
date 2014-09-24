@@ -113,7 +113,7 @@ public class SRPUtil {
     	stream.write(password);
     	
     	byte idPass[] = stream.toByteArray();
-    	System.out.println(1<<17);
+//    	System.out.println(1<<17);
     	
     	byte output[] = SCrypt.scrypt(idPass, salt, 1<<15, 13, 2, 64);
     	

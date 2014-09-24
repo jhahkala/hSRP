@@ -51,13 +51,24 @@ public class SRPService extends HessianServlet implements SRPAPI {
             _cacheManager = new DefaultCacheManager(cacheConfig);
         }
         _users = _cacheManager.getCache("passwordsAndSessions");
-        System.out.println("users: " + _users);
-        System.out.println("props: " + props);
-        props.list(System.out);
+//        System.out.println("users: " + _users);
+//        System.out.println("props: " + props);
+//        props.list(System.out);
     }
 
     public Cache<String, User> getSessionCache(){
         return _users;
+    }
+
+    public DefaultCacheManager getCacheManager(){
+        return _cacheManager;
+    }
+
+    public void destroy(){
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!! stopping **************************");
+        _users.stop();
+        _cacheManager.stop();
+        _cacheManager = null;
     }
 
 
@@ -117,7 +128,7 @@ public class SRPService extends HessianServlet implements SRPAPI {
         user.addSession(testSession);
         
         _users.put(name, user);
-        System.out.println("handshakeaa Identity: " + new String(identity) + " session K: " + new String(K));
+//        System.out.println("handshakeaa Identity: " + new String(identity) + " session K: " + new String(K));
         return SRPUtil.calculateM2(A, M1, K, padLength, digest);
     }
 
