@@ -1,18 +1,10 @@
 package fi.hip.sicx.srp;
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.Properties;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.glite.security.trustmanager.ContextWrapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.caucho.hessian.client.HessianProxyFactory;
-import com.caucho.hessian.client.TMHessianURLConnectionFactory;
+import fi.hip.sicx.srp.hessian.HessianSRPProxyFactory;
 
 
 public class SRPServiceTest {
@@ -47,18 +39,6 @@ public class SRPServiceTest {
         // }
     }
     
-    public void setup() throws Exception {
-        server = new SRPServer();
-        server.configure(SERVER_PURGE_CONFIG_FILE);
-        server.start();
-        File configFile = new File(TRUSTED_CLIENT_CONFIG_FILE);
-        Properties props = new Properties();
-        props.load(new FileReader(configFile));
-        ContextWrapper wrapper = new ContextWrapper(props, false);
-        HttpsURLConnection.setDefaultSSLSocketFactory(wrapper.getSocketFactory());
-        HttpsURLConnection.setDefaultHostnameVerifier(new TMHostnameVerifier());         
-        
-    }
 
     /**
      * @param args
@@ -72,20 +52,8 @@ public class SRPServiceTest {
             server.start();
             
             // client
-            File configFile = new File(TRUSTED_CLIENT_CONFIG_FILE);
-            Properties props = new Properties();
-            props.load(new FileReader(configFile));
-            ContextWrapper wrapper = new ContextWrapper(props, false);
-            
-            TMHostnameVerifier hostVerifier = new TMHostnameVerifier();         
-            
             String url = "https://localhost:40669/MetaService";
-            HessianProxyFactory factory = new HessianProxyFactory();
-            TMHessianURLConnectionFactory connectionFactory = new TMHessianURLConnectionFactory();
-            connectionFactory.setWrapper(wrapper);
-            connectionFactory.setVerifier(hostVerifier);
-            connectionFactory.setHessianProxyFactory(factory);
-            factory.setConnectionFactory(connectionFactory);
+            HessianSRPProxyFactory factory = HessianSRPProxyFactory.getFactory(TRUSTED_CLIENT_CONFIG_FILE);
             SRPAPI service = (SRPAPI) factory.create(SRPAPI.class, url);
             
             String name = "UserNamexxx";

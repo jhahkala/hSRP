@@ -1,4 +1,4 @@
-package fi.hip.sicx.srp;
+package fi.hip.sicx.srp.hessian;
 
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;

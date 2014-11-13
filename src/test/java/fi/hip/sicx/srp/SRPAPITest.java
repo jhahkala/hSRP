@@ -48,12 +48,4 @@ public class SRPAPITest {
         System.out.println("K: " + new String(session.getK()) + " S: " + session.getS());
     }
     
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
