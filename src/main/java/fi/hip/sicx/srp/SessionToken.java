@@ -14,6 +14,15 @@ public class SessionToken {
     private byte _identity[] = null;
 
     public SessionToken(byte identity[], byte K[]){
+        setValues(identity, K);
+    }
+    
+    public SessionToken(String username, byte K[]){
+        byte identity[] = SRPUtil.stringBytes(username); 
+        setValues(identity, K);
+    }
+
+    private void setValues(byte identity[], byte K[]){
         if(K == null){
             throw new IllegalArgumentException("Null is not allowed for K.");
         }
@@ -21,7 +30,7 @@ public class SessionToken {
             throw new IllegalArgumentException("Null is not allowed for identity.");
         }
         _K = K;
-        _identity = identity;
+        _identity = identity;        
     }
     
     public SessionToken(String token){

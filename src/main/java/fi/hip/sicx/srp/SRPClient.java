@@ -46,6 +46,14 @@ public class SRPClient {
         
     }
     
+    public static SessionKey login(SRPAPI service, String identity, String passwordString) throws CryptoException, HandshakeException{
+
+        byte identityBytes[] = SRPUtil.stringBytes(identity);
+        byte passwordBytes[] = SRPUtil.stringBytes(passwordString);
+
+        return SRPClient.login(service, identityBytes, passwordBytes);
+        
+    }
     
     public static SessionKey login(SRPAPI service, byte identity[], byte password[]) throws CryptoException, HandshakeException{
         Digest digest = new SHA512Digest();

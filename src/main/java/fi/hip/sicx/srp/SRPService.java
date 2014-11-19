@@ -159,8 +159,12 @@ public class SRPService extends HessianServlet implements SRPAPI {
             // TODO: do fake stuff to make finding our if that user exists harder by timing analysis
             return;
         }
-        user.removeSession(K);
-        _users.put(name, user);
+        int found = user.removeSession(K);
+        if(found == 0){
+            throw new IllegalArgumentException("Session not found");
+        } else {
+            _users.put(name, user);
+        }
     }
 
     
