@@ -22,6 +22,12 @@ public class HessianSRPProxyFactory extends HessianProxyFactory {
         File configFile = new File(configFileName);
         Properties props = new Properties();
         props.load(new FileReader(configFile));
+
+        return getFactory(props);
+        
+    }
+    
+    public static HessianSRPProxyFactory getFactory(Properties props) throws FileNotFoundException, IOException, GeneralSecurityException{
         ContextWrapper wrapper = new ContextWrapper(props, false);
 
         TMHostnameVerifier hostVerifier = new TMHostnameVerifier();

@@ -65,7 +65,6 @@ public class SRPService extends HessianServlet implements SRPAPI {
     }
 
     public void destroy(){
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!! stopping **************************");
         _users.stop();
         _cacheManager.stop();
         _cacheManager = null;

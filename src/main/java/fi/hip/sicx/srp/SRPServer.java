@@ -69,7 +69,7 @@ public class SRPServer {
         _server.setHandler(context);
 
         context.addServlet(new ServletHolder(new SRPService(filename)), "/*");
-        System.out.println("Server configured: " + _server);
+//        System.out.println("Server configured: " + _server);
 
     }
 
