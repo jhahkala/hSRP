@@ -1,5 +1,7 @@
 package fi.hip.sicx.srp;
 
+import java.io.UnsupportedEncodingException;
+
 import org.bouncycastle.util.encoders.Hex;
 
 /**
@@ -18,7 +20,14 @@ public class SessionToken {
     }
     
     public SessionToken(String username, byte K[]){
-        byte identity[] = SRPUtil.stringBytes(username); 
+        byte identity[];
+        try {
+            identity = SRPUtil.stringBytes(username);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalArgumentException("Username or password encoding failed.");
+        } 
         setValues(identity, K);
     }
 
@@ -46,7 +55,13 @@ public class SessionToken {
         if (len < 2 || len > 256){
             throw new IllegalArgumentException("Identity string lenght is wrong (" + len + ") when it should be between 2 and 256.");
         }
-        _identity = SRPUtil.stringBytes(parts[0]);
+        try {
+            _identity = SRPUtil.stringBytes(parts[0]);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalArgumentException("Username or password encoding failed.");
+        }
         len = parts[1].length();
         if (len < 8 || len > 1024){
             throw new IllegalArgumentException("Hash string lenght is wrong (" + len + ") when it should be between 8 and 256.");

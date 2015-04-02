@@ -1,6 +1,7 @@
 package fi.hip.sicx.srp;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -26,8 +27,16 @@ public class SRPClient {
         int padLength = (N.bitLength() + 7) / 8;
 
         byte salt[] = SRPUtil.getPadded(random, padLength);
-        byte identity[] = SRPUtil.stringBytes(name);
-        byte password[] = SRPUtil.stringBytes(passwordString);
+        byte identity[];
+        byte password[];
+        try {
+            identity = SRPUtil.stringBytes(name);
+            password = SRPUtil.stringBytes(passwordString);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalArgumentException("username or password encoding failed.");
+        }
 
         BigInteger x;
 		try {
@@ -48,8 +57,16 @@ public class SRPClient {
     
     public static SessionKey login(SRPAPI service, String identity, String passwordString) throws CryptoException, HandshakeException{
 
-        byte identityBytes[] = SRPUtil.stringBytes(identity);
-        byte passwordBytes[] = SRPUtil.stringBytes(passwordString);
+        byte identityBytes[];
+        byte passwordBytes[];
+        try {
+            identityBytes = SRPUtil.stringBytes(identity);
+            passwordBytes = SRPUtil.stringBytes(passwordString);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new HandshakeException("username or password encoding failed.");
+        }
 
         return SRPClient.login(service, identityBytes, passwordBytes);
         

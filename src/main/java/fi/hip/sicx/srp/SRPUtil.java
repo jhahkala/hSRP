@@ -2,6 +2,7 @@ package fi.hip.sicx.srp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.text.Normalizer;
@@ -88,9 +89,9 @@ public class SRPUtil {
         return hash(SBits, digest);        
     }
     
-    public static byte[] stringBytes(String input){
+    public static byte[] stringBytes(String input) throws UnsupportedEncodingException{
         String normalized = Normalizer.normalize(input, Form.NFKC);
-        return normalized.getBytes();
+        return normalized.getBytes("UTF-8");
     }
     
     /**
