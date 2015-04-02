@@ -41,10 +41,13 @@ public class SRPClient {
         BigInteger x;
 		try {
 			x = SRPUtil.calculateXWithScrypt(N, salt, identity, password);
-		} catch (IOException | GeneralSecurityException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			throw new RuntimeException("Internal error while calculating verifier.");
-		}
+			throw new RuntimeException("Internal error while calculating verifier: " + e.getLocalizedMessage());
+		} catch (GeneralSecurityException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Internal error while calculating verifier: " + e.getLocalizedMessage());
+        }
 
         BigInteger verifier = g.modPow(x, N);
 
@@ -100,10 +103,13 @@ public class SRPClient {
         BigInteger x;
 		try {
 			x = SRPUtil.calculateXWithScrypt(N, salt, identity, password);
-		} catch (IOException | GeneralSecurityException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			throw new HandshakeException("Internal error while calculating verifier.");
-		}
+			throw new HandshakeException("Internal error while calculating verifier:" + e.getLocalizedMessage());
+		} catch (GeneralSecurityException e) {
+            e.printStackTrace();
+            throw new HandshakeException("Internal error while calculating verifier:" + e.getLocalizedMessage());
+        }
         BigInteger k = SRP6Util.calculateK(digest, N, g);
         
         BigInteger exp = u.multiply(x).mod(N).add(a).mod(N);
